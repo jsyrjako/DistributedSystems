@@ -1,1 +1,3 @@
-python client.py -u
+#!/bin/bash
+
+python client.py

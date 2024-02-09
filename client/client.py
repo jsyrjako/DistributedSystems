@@ -7,6 +7,7 @@ sio = socketio.Client()
 rps_moves = ["rock", "paper", "scissors"]
 choice_mapping = {"r": "rock", "p": "paper", "s": "scissors"}
 
+
 @sio.event
 def connect():
     print("Connected to the server.")
@@ -58,7 +59,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        sio.connect("http://server:5000", namespaces=["/"])
+        sio.connect("http://127.0.0.1:5000", namespaces=["/"])
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
         play_game(args)  # Start the first round of the game
         sio.wait()
