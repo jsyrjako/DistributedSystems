@@ -1,6 +1,9 @@
 import socketio
+import random
 
 sio = socketio.Client()
+
+rps_moves = ["rock", "paper", "scissors"]
 
 @sio.event
 def connect():
@@ -23,11 +26,15 @@ def opponent_disconnected():
 def play_game():
     # This function is called to start a new game or play the next round
     choice = input("Choose rock, paper, or scissors: ")
-    if choice in ["rock", "paper", "scissors"]:
+    if choice in rps_moves:
         sio.emit('play', {'choice': choice}, namespace='/')
     else:
         print("Invalid choice. Please choose rock, paper, or scissors.")
         play_game()
+
+def random_choice():
+    choice = random.choice(rps_moves)
+    return choice
 
 def main():
     try:

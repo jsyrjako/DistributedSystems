@@ -1,22 +1,24 @@
 services:
     api:
-        container_name: rps_server
-        build:
-            context: .
-            dockerfile: Dockerfile
-        entrypoint: ./docker-entrypoint.sh
-        volumes:
-            - .:/usr/src
-        networks:
-          default: null
-        restart: always
-        ports:
-            - mode: ingress
-              target: 5000
-              published: "5000"
-              protocol: tcp
-        depends_on:
-          - db
+      build:
+          context: .
+          dockerfile: Dockerfile
+      entrypoint: ./docker-entrypoint.sh
+      volumes:
+          - .:/usr/src
+      networks:
+        default: null
+      restart: always
+      ports:
+          - mode: ingress
+            target: 5000
+            published: "5000"
+            protocol: tcp
+      environment:
+      - FLASK_APP=server.py
+      - FLASK_ENV=development
+      depends_on:
+        - db
 
     db:
       container_name: rps_db

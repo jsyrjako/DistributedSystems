@@ -1,3 +1,3 @@
 #!/bin/bash
 
-flask run --app="rps" --debug
+flask run --host=0.0.0.0 --debug
