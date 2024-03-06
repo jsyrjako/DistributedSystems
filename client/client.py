@@ -1,12 +1,16 @@
 import socketio
 import random
 import argparse
+import time
+import os
 
 sio = socketio.Client()
 
 rps_moves = ["rock", "paper", "scissors"]
 choice_mapping = {"r": "rock", "p": "paper", "s": "scissors"}
+arguments = {"User": False}
 
+SERVER_URL = "http://192.168.1.139:5000"
 
 @sio.event
 def connect():
@@ -16,36 +20,44 @@ def connect():
 @sio.event
 def disconnect():
     print("Disconnected from the server.")
+    return
 
 
 @sio.event
 def result(data):
     print(
-        f"Game result: {data['result']}. Your choice was {data['your_choice']}, opponent chose {data['opponent_choice']}."
+        f"Game result: {data['result']}. Your choice was {data['your_choice']}, opponent chose {data['opponent_choice']}. \n"
     )
     # After receiving the result, prompt for the next round
+    time.sleep(5)
     play_game()
 
 
 @sio.event
 def opponent_disconnected():
-    print("Your opponent has disconnected. Waiting for a new opponent.")
+    print("Your opponent has disconnected. Searching for a new opponent.")
+    play_game()
 
 
-def play_game(args=None):
+def play_game():
     # This function is called to start a new game or play the next round
     choice = ""
-    if args and args.user:
+    if arguments["User"]:
         while choice not in rps_moves:
-            choice = input("Choose rock (r), paper (p), or scissors (s): ").lower()
+            choice = input("Choose rock (r), paper (p), or scissors (s) or quit q: ").lower()
             if choice in choice_mapping:
                 choice = choice_mapping[choice]
+            if choice in ["quit", "exit", "q", "Q",]:
+                print("Exiting the game...")
+                os._exit(0)
             if choice not in rps_moves:
                 print("Invalid choice. Please choose rock, paper, or scissors.")
     else:
+        print(f"NO USER ARGUMENTS")
         choice = random_choice()
 
     sio.emit("play", {"choice": choice}, namespace="/")
+    sio.wait()
 
 
 def random_choice():
@@ -55,13 +67,17 @@ def random_choice():
 
 def main():
     parser = argparse.ArgumentParser(description="Rock-Paper-Scissors game")
-    parser.add_argument("-u", "--user", action="store_true", help="Play RPS manually")
+    parser.add_argument("-k", "--kayttaja", action="store_true", help="Play RPS manually")
     args = parser.parse_args()
 
+    if args.kayttaja:
+        arguments["User"] = True
+    print("Starting RPS...")
     try:
-        sio.connect("http://127.0.0.1:5000", namespaces=["/"])
+        print("Connecting to the server port 5000...")
+        sio.connect(SERVER_URL, namespaces=['/'])
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
-        play_game(args)  # Start the first round of the game
+        play_game()  # Start the first round of the game
         sio.wait()
     except KeyboardInterrupt:
         print("Game interrupted.")

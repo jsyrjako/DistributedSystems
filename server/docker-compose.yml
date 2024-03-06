@@ -1,8 +1,6 @@
 services:
     api:
-      build:
-          context: .
-          dockerfile: Dockerfile
+      build: .
       entrypoint: ./docker-entrypoint.sh
       volumes:
           - .:/usr/src
@@ -10,33 +8,9 @@ services:
         default: null
       restart: always
       ports:
-          - mode: ingress
-            target: 5000
-            published: "5000"
-            protocol: tcp
+        - "5000:5000"
       environment:
       - FLASK_APP=server.py
       - FLASK_ENV=development
-      depends_on:
-        - db
+      - FLASK_RUN_HOST=0.0.0.0
 
-    db:
-      container_name: rps_db
-      image: postgres:latest
-      environment:
-          POSTGRES_USER: rps_db_user
-          POSTGRES_PASSWORD: rps_db_password
-          POSTGRES_DB: rps_gamedata
-      networks:
-        default: null
-      restart: always
-      deploy:
-        replicas: 1
-        restart_policy:
-            condition: on-failure
-
-    adminer:
-      image: adminer
-      restart: always
-      ports:
-        - 8080:8080

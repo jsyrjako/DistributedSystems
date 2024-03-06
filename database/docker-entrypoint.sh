@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "JOONAKSEN DATABASE KÄYNNISTYY"

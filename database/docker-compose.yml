@@ -1,0 +1,18 @@
+services:
+    db:
+      container_name: rps_db
+      entrypoint: ./docker-entrypoint.sh
+      volumes:
+        - .:/usr/src
+      image: postgres:latest
+      environment:
+          POSTGRES_USER: rps_db_user
+          POSTGRES_PASSWORD: rps_db_password
+          POSTGRES_DB: rps_gamedata
+      networks:
+        default: null
+      restart: always
+      deploy:
+        replicas: 1
+        restart_policy:
+            condition: on-failure

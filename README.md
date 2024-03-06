@@ -43,3 +43,33 @@ deactivate
 ```bash
 pip install -r requirements.txt
 ```
+
+
+## Running the application
+
+### Start the server
+
+cd to the server folder and run the following command:
+
+```bash
+docker-compose up
+```
+
+### Start the client
+
+cd to the client folder and run the following command:
+
+```bash
+docker-compose up
+```
+
+Play Manually:
+
+prerequisites:
+- server is running
+- venv is activated
+
+```bash
+python client.py --user
+```
+
