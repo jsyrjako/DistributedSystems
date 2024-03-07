@@ -12,6 +12,7 @@ arguments = {"User": False}
 
 SERVER_URL = "http://192.168.1.139:5000"
 
+
 @sio.event
 def connect():
     print("Connected to the server.")
@@ -44,10 +45,17 @@ def play_game():
     choice = ""
     if arguments["User"]:
         while choice not in rps_moves:
-            choice = input("Choose rock (r), paper (p), or scissors (s) or quit q: ").lower()
+            choice = input(
+                "Choose rock (r), paper (p), or scissors (s) or quit q: "
+            ).lower()
             if choice in choice_mapping:
                 choice = choice_mapping[choice]
-            if choice in ["quit", "exit", "q", "Q",]:
+            if choice in [
+                "quit",
+                "exit",
+                "q",
+                "Q",
+            ]:
                 print("Exiting the game...")
                 os._exit(0)
             if choice not in rps_moves:
@@ -67,7 +75,9 @@ def random_choice():
 
 def main():
     parser = argparse.ArgumentParser(description="Rock-Paper-Scissors game")
-    parser.add_argument("-k", "--kayttaja", action="store_true", help="Play RPS manually")
+    parser.add_argument(
+        "-k", "--kayttaja", action="store_true", help="Play RPS manually"
+    )
     args = parser.parse_args()
 
     if args.kayttaja:
@@ -75,7 +85,7 @@ def main():
     print("Starting RPS...")
     try:
         print("Connecting to the server port 5000...")
-        sio.connect(SERVER_URL, namespaces=['/'])
+        sio.connect(SERVER_URL, namespaces=["/"])
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
         play_game()  # Start the first round of the game
         sio.wait()

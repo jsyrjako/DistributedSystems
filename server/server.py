@@ -7,7 +7,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 thread_lock = Lock()
 
-db = 
+db =
 
 
 clients = {}
@@ -88,7 +88,7 @@ def handle_disconnect():
 def handle_play(data):
     choice = data['choice']
     with thread_lock:
-        # Find the game that this player is part of 
+        # Find the game that this player is part of
         game = next((game for game in games if request.sid in game), None)
         print(game)
         if game is None:
@@ -99,12 +99,12 @@ def handle_play(data):
                 print(f'Creating a new game for player {request.sid}')
                 game = {request.sid: {'choice': choice}}
                 games.append(game)
-                       
+
             else:
                 print(f'Adding player {request.sid} to game {game_with_one_player}')
                 game = game_with_one_player
                 game[request.sid] = {'choice': choice}
-            
+
         else:
             # If the player is part of a game, update their choice
             game[request.sid]['choice'] = choice
@@ -127,6 +127,7 @@ def handle_play(data):
 
 def store_results_in_db(result, player1_choice, player2_choice):
     print(f'Storing results in database: {result}, {player1_choice}, {player2_choice}')
+
 
 
 if __name__ == '__main__':
