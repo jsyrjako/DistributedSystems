@@ -4,3 +4,4 @@ database/data
 
 server/__pycache__
 */pycache/
+server/rps/__pycache__
