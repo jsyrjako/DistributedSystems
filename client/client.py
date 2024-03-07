@@ -85,7 +85,7 @@ def main():
         arguments["User"] = True
     print("Starting RPS...")
     try:
-        print("Connecting to the server port 5000...")
+        print(f"Connecting to the server at {SERVER_URL}...")
         sio.connect(SERVER_URL)
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
         play_game()  # Start the first round of the game

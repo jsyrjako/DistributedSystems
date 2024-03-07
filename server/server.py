@@ -1,20 +1,12 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
-from flask_sqlalchemy import SQLAlchemy
 from threading import Lock
 
 from rps.models import GameResult, db
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 thread_lock = Lock()
-
-#db = psycopg.connect(
-#    dbname=config['DB_NAME'],
-#    user=config['DB_USER'],
-#    password=config['DB_PASS'],
-#    host=config['DB_URL']
-#)
 
 clients = {}
 games = []
@@ -25,7 +17,7 @@ def evaluate_game(player1_choice, player2_choice):
     elif (player1_choice == "rock" and player2_choice == "scissors") or \
          (player1_choice == "scissors" and player2_choice == "paper") or \
          (player1_choice == "paper" and player2_choice == "rock"):
-        
+
         return "Player 1 wins"
     else:
         return "Player 2 wins"
@@ -55,24 +47,6 @@ def handle_disconnect():
             games.remove(game)
 
         del clients[request.sid]
-
-#@socketio.on('play')
-#def handle_play(data):
-#    choice = data['choice']
-#    with thread_lock:
-#        clients[request.sid]['choice'] = choice
-#        opponent_sid = clients[request.sid]['opponent']
-#        if opponent_sid and clients[opponent_sid]['choice'] is not None:
-#            player1_sid = request.sid
-#            player2_sid = opponent_sid
-#            player1_choice = clients[player1_sid]['choice']
-#            player2_choice = clients[player2_sid]['choice']
-#            result = evaluate_game(player1_choice, player2_choice)
-#            emit('result', {'result': result, 'your_choice': player1_choice, 'opponent_choice': player2_choice}, room=player1_sid)
-#            emit('result', {'result': result, 'your_choice': player2_choice, 'opponent_choice': player1_choice}, room=player2_sid)
-#            # Reset choices after announcing results
-#            clients[player1_sid]['choice'] = None
-#            clients[player2_sid]['choice'] = None
 
 
 @socketio.on('play')
@@ -118,10 +92,10 @@ def handle_play(data):
 
 
 def store_results_in_db(result, player1_choice, player2_choice):
-    print(f'Storing results in database: {result}, {player1_choice}, {player2_choice}')
+    print(f'Storing results in database: {player1_choice}, {player2_choice}', {result})
     game_result = GameResult(player1_choice, player2_choice, result)
     db.add(game_result)
     db.commit()
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0')
+    app.run(app, debug=True, host='0.0.0.0')
