@@ -1,9 +1,0 @@
-CMD1(server):   docker-compose build
-                docker-compose logs -f server
-                docker-compose up -d server 
-                docker-compose down  
-
-CMD2(client1):  docker-compose run client1
-
-
-CMD3(client2):  docker-compose run client2
