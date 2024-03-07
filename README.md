@@ -70,6 +70,6 @@ prerequisites:
 - venv is activated
 
 ```bash
-python client.py --user
+python client.py --kayttaja
 ```
 
