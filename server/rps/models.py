@@ -4,8 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from dotenv import dotenv_values
 
 # Postgres database
-config = dotenv_values(".env") # Contains the database strings
-db_conn_url = f"postgresql+psycopg2://{config['DB_USER']}:{config['DB_PASS']}@{config['DB_URL']}:{int(config['DB_PORT'])}/{config['DB_NAME']}"
+config = dotenv_values(".env")  # Contains the database strings
+db_conn_url = f"postgresql+psycopg2://{config['DB_USER']}:{config['DB_PASS']}@{config['DB_URL']}:{config['DB_PORT']}/{config['DB_NAME']}"
 engine = create_engine(db_conn_url)
 
 Base = declarative_base()
@@ -13,8 +13,9 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 db = Session()
 
+
 class GameResult(Base):
-    __tablename__ = 'gameresults'
+    __tablename__ = "gameresults"
 
     id = Column(Integer, primary_key=True)
     player1_choice = Column(String)
