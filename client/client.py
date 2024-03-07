@@ -3,6 +3,7 @@ import random
 import argparse
 import time
 import os
+from dotenv import dotenv_values
 
 sio = socketio.Client()
 
@@ -10,8 +11,8 @@ rps_moves = ["rock", "paper", "scissors"]
 choice_mapping = {"r": "rock", "p": "paper", "s": "scissors"}
 arguments = {"User": False}
 
-SERVER_URL = "http://192.168.1.139:5000"
-
+config = dotenv_values(".env")
+SERVER_URL = config['SERVER_URL']
 
 @sio.event
 def connect():
@@ -64,7 +65,7 @@ def play_game():
         print(f"NO USER ARGUMENTS")
         choice = random_choice()
 
-    sio.emit("play", {"choice": choice}, namespace="/")
+    sio.emit("play", {"choice": choice})
     sio.wait()
 
 
@@ -85,7 +86,7 @@ def main():
     print("Starting RPS...")
     try:
         print("Connecting to the server port 5000...")
-        sio.connect(SERVER_URL, namespaces=["/"])
+        sio.connect(SERVER_URL)
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
         play_game()  # Start the first round of the game
         sio.wait()

@@ -1,33 +1,23 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
+from flask_sqlalchemy import SQLAlchemy
 from threading import Lock
 
+from rps.models import GameResult, db
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 thread_lock = Lock()
 
-db =
-
+#db = psycopg.connect(
+#    dbname=config['DB_NAME'],
+#    user=config['DB_USER'],
+#    password=config['DB_PASS'],
+#    host=config['DB_URL']
+#)
 
 clients = {}
-# games = {}
 games = []
-
-#def match_players():
-#    while True:
-#        with thread_lock:
-#            available_clients = [client_id for client_id, client in clients.items() if client['opponent'] is None]
-#            while len(available_clients) >= 2:
-#                print(f'Available clients: {available_clients}')
-#                player1_id = random.choice(available_clients)
-#                available_clients.remove(player1_id)
-#                player2_id = random.choice(available_clients)
-#                available_clients.remove(player2_id)
-#                clients[player1_id]['opponent'] = player2_id
-#                clients[player2_id]['opponent'] = player1_id
-#                print(f'Game started between {player1_id} and {player2_id}')
-#        socketio.sleep(10)
 
 def evaluate_game(player1_choice, player2_choice):
     if player1_choice == player2_choice:
@@ -35,6 +25,7 @@ def evaluate_game(player1_choice, player2_choice):
     elif (player1_choice == "rock" and player2_choice == "scissors") or \
          (player1_choice == "scissors" and player2_choice == "paper") or \
          (player1_choice == "paper" and player2_choice == "rock"):
+        
         return "Player 1 wins"
     else:
         return "Player 2 wins"
@@ -121,14 +112,16 @@ def handle_play(data):
             # Reset choices after announcing results
             # for sid in game:
             #     game[sid]['choice'] = None
+            store_results_in_db(result, player1_choice, player2_choice)
 
             del game
 
 
 def store_results_in_db(result, player1_choice, player2_choice):
     print(f'Storing results in database: {result}, {player1_choice}, {player2_choice}')
-
-
+    game_result = GameResult(player1_choice, player2_choice, result)
+    db.add(game_result)
+    db.commit()
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0')
