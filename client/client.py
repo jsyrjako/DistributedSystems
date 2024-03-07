@@ -12,7 +12,8 @@ choice_mapping = {"r": "rock", "p": "paper", "s": "scissors"}
 arguments = {"User": False}
 
 config = dotenv_values(".env")
-SERVER_URL = config['SERVER_URL']
+SERVER_URL = config["SERVER_URL"]
+
 
 @sio.event
 def connect():
@@ -22,13 +23,12 @@ def connect():
 @sio.event
 def disconnect():
     print("Disconnected from the server.")
-    return
 
 
 @sio.event
 def result(data):
     print(
-        f"Game result: {data['result']}. Your choice was {data['your_choice']}, opponent chose {data['opponent_choice']}. \n"
+        f"Game result: Your choice was {data['your_choice']}, opponent chose {data['opponent_choice']} \n"
     )
     # After receiving the result, prompt for the next round
     time.sleep(5)
@@ -38,6 +38,7 @@ def result(data):
 @sio.event
 def opponent_disconnected():
     print("Your opponent has disconnected. Searching for a new opponent.")
+    time.sleep(5)
     play_game()
 
 
@@ -49,8 +50,7 @@ def play_game():
             choice = input(
                 "Choose rock (r), paper (p), or scissors (s) or quit q: "
             ).lower()
-            if choice in choice_mapping:
-                choice = choice_mapping[choice]
+            choice = choice_mapping.get(choice, choice)
             if choice in [
                 "quit",
                 "exit",
@@ -62,10 +62,10 @@ def play_game():
             if choice not in rps_moves:
                 print("Invalid choice. Please choose rock, paper, or scissors.")
     else:
-        print(f"NO USER ARGUMENTS")
         choice = random_choice()
 
-    sio.emit("play", {"choice": choice})
+    if sio.connected:
+        sio.emit("play", {"choice": choice})
     sio.wait()
 
 
@@ -86,7 +86,7 @@ def main():
     print("Starting RPS...")
     try:
         print(f"Connecting to the server at {SERVER_URL}...")
-        sio.connect(SERVER_URL)
+        sio.connect(SERVER_URL, namespaces=["/"])
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
         play_game()  # Start the first round of the game
         sio.wait()
@@ -96,6 +96,7 @@ def main():
         print(f"Connection failed: {e}")
     finally:
         sio.disconnect()
+        os._exit(0)
 
 
 if __name__ == "__main__":
