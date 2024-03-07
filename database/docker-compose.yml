@@ -17,6 +17,9 @@ services:
         condition: on-failure
     volumes:
       - ./data:/var/lib/postgresql/data
+    # workaround for localhost
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   adminer:
     image: adminer

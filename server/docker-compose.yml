@@ -15,20 +15,27 @@ services:
       - FLASK_RUN_HOST=0.0.0.0
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 2       #Change this to change the number of servers
       update_config:
         delay: 1s
       restart_policy:
         condition: any
         delay: 5s
         window: 120s
+    networks:
+        - app_network
+    # workaround for localhost
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "5000:5000"
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+    - app_network
 
 networks:
   app_network:
