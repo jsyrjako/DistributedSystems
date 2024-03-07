@@ -1,3 +1,6 @@
 */venv
 
 database/data
+
+server/__pycache__
+*/pycache/
