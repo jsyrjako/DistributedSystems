@@ -109,8 +109,8 @@ def handle_play(data):
                 room=player2_sid,
             )
             # Reset choices after announcing results
-            # for sid in game:
-            #     game[sid]['choice'] = None
+            for sid in game:
+                game[sid]['choice'] = None
             store_results_in_db(result, player1_choice, player2_choice)
 
             del game
