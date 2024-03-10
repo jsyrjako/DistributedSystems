@@ -4,3 +4,10 @@ services:
     build: .
     stdin_open: true
     tty: true
+    deploy:
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 120s

@@ -11,6 +11,9 @@ thread_lock = Lock()
 clients = {}
 games = []
 
+connected_clients = 0
+disconnected_clients = 0
+
 
 def evaluate_game(player1_choice, player2_choice):
     if player1_choice == player2_choice:
@@ -30,6 +33,7 @@ def evaluate_game(player1_choice, player2_choice):
 def handle_connect():
     # global match_task
     print(f"Client connected: {request.sid}")
+    client_count_add()
     with thread_lock:
         clients[request.sid] = {"choice": None, "opponent": None}
     # if 'match_task' not in globals() or not match_task.is_alive():
@@ -40,6 +44,7 @@ def handle_connect():
 @socketio.on("disconnect")
 def handle_disconnect():
     print(f"Client disconnected: {request.sid}")
+    client_count_sub()
     with thread_lock:
         # opponent_sid = clients[request.sid]["opponent"]
         game = next((game for game in games if request.sid in game), None)
@@ -51,6 +56,23 @@ def handle_disconnect():
             games.remove(game)
 
         del clients[request.sid]
+
+
+# prints the number of clients connected
+def client_count_add():
+    global connected_clients
+    connected_clients += 1
+    print(f"Connected clients: {connected_clients}")
+    print(f"Disconnected clients: {disconnected_clients}")
+    print(f"Total clients: {connected_clients - disconnected_clients}")
+
+
+def client_count_sub():
+    global disconnected_clients
+    disconnected_clients += 1
+    print(f"Connected clients: {connected_clients}")
+    print(f"Disconnected clients: {disconnected_clients}")
+    print(f"Total clients: {connected_clients - disconnected_clients}")
 
 
 @socketio.on("play")
@@ -110,7 +132,7 @@ def handle_play(data):
             )
             # Reset choices after announcing results
             for sid in game:
-                game[sid]['choice'] = None
+                game[sid]["choice"] = None
             store_results_in_db(result, player1_choice, player2_choice)
 
             del game
