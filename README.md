@@ -58,7 +58,7 @@ docker-compose up
 ### Start the server
 
 prerequisites:
-- database is running
+- Database is running
 
 cd to the server folder and run the following command:
 
@@ -70,7 +70,7 @@ docker-compose up
 
 prerequisites:
 - Database is running
-- server is running
+- Server is running
 
 cd to the client folder and run the following command:
 
