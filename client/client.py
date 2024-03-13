@@ -77,16 +77,16 @@ def random_choice():
 def main():
     parser = argparse.ArgumentParser(description="Rock-Paper-Scissors game")
     parser.add_argument(
-        "-k", "--kayttaja", action="store_true", help="Play RPS manually"
+        "-p", "--player", action="store_true", help="Play RPS manually"
     )
     args = parser.parse_args()
 
-    if args.kayttaja:
+    if args.player:
         arguments["User"] = True
     print("Starting RPS...")
     try:
         print(f"Connecting to the server at {SERVER_URL}...")
-        sio.connect(SERVER_URL, namespaces=["/"])
+        sio.connect(SERVER_URL, namespaces=["/"], transports="websocket")
         print("Connected to the server. Waiting to play Rock-Paper-Scissors...")
         play_game()  # Start the first round of the game
         sio.wait()
