@@ -1,0 +1,28 @@
+services:
+  db:
+    container_name: rps_db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: rps_db_user
+      POSTGRES_PASSWORD: rps_db_password
+      POSTGRES_DB: rps_gamedata
+    networks:
+      default: null
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    # workaround for localhost
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

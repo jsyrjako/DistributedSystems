@@ -1,40 +1,41 @@
+version: '3.8'
+
 services:
-    api:
-        container_name: rps_server
-        build:
-            context: .
-            dockerfile: Dockerfile
-        entrypoint: ./docker-entrypoint.sh
-        volumes:
-            - .:/usr/src
-        networks:
-          default: null
-        restart: always
-        ports:
-            - mode: ingress
-              target: 5000
-              published: "5000"
-              protocol: tcp
-        depends_on:
-          - db
+  api:
+    build: .
+    entrypoint: ./docker-entrypoint.sh
+    volumes:
+      - .:/usr/src
+    restart: always
+    ports:
+      - "5001-5002:5000"
+    environment:
+      - FLASK_APP=server.py
+      - FLASK_ENV=development
+      - FLASK_RUN_HOST=0.0.0.0
+    deploy:
+      mode: replicated
+      replicas: 2       #Change this to change the number of servers
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 120s
+    networks:
+        - app_network
+    # workaround for localhost
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-    db:
-      container_name: rps_db
-      image: postgres:latest
-      environment:
-          POSTGRES_USER: rps_db_user
-          POSTGRES_PASSWORD: rps_db_password
-          POSTGRES_DB: rps_gamedata
-      networks:
-        default: null
-      restart: always
-      deploy:
-        replicas: 1
-        restart_policy:
-            condition: on-failure
+  nginx:
+    image: nginx:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+    - app_network
 
-    adminer:
-      image: adminer
-      restart: always
-      ports:
-        - 8080:8080
+networks:
+  app_network:

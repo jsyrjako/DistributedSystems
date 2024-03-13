@@ -1,1 +1,7 @@
 */venv
+
+database/data
+
+server/__pycache__
+server/rps/__pycache__
+*/pycache/
